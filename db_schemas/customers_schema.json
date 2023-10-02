@@ -1,0 +1,57 @@
+﻿{
+  "$jsonSchema": {
+    "title": "Customer record",
+    "description": "This document records the details of an customer",
+    "type": "object",
+    "properties": {
+      "first_name": {
+        "description": "First name of the customer",
+        "type": "string",
+        "minLength": 1
+      },
+      "last_name": {
+        "description": "Last name of the customer",
+        "type": "string",
+        "minLength": 1
+      },
+      "email": {
+        "description": "Email of the customer",
+        "type": "string"
+      },
+      "phone": {
+        "description": "Phone number of the customer",
+        "type": "string"
+      },
+      "address": {
+        "description": "Address of the customer",
+        "type": "string"
+      },
+      "birth_date": {
+        "description": "Birth date of the customer",
+        "bsonType": "date"
+      },
+      "password_hash": {
+        "description": "Hash of the password",
+        "type": "string"
+      },
+      "accounts": {
+        "description": "List of accounts of the customer",
+        "type": "array",
+        "uniqueItems": true,
+        "items": {
+          "bsonType": "objectId"
+        }
+      }
+    },
+    "required": [
+      "first_name",
+      "last_name",
+      "email",
+      "phone",
+      "address",
+      "birth_date",
+      "password_hash"
+    ],
+    "additionalProperties": true
+  }
+}
