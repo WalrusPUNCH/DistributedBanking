@@ -5,6 +5,10 @@ VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DistributedBanking", "DistributedBanking\DistributedBanking.csproj", "{6A939CA9-8F76-4C12-B21A-5537A0788BF5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DistributedBanking.Domain", "DistributedBanking.Domain\DistributedBanking.Domain.csproj", "{0AD20FD5-D73A-4C84-9F47-5823B7FE5AB7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DistributedBanking.Data", "DistributedBanking.Data\DistributedBanking.Data.csproj", "{F24A2935-B186-449A-B9CC-1BFA07C6AA48}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{6A939CA9-8F76-4C12-B21A-5537A0788BF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6A939CA9-8F76-4C12-B21A-5537A0788BF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6A939CA9-8F76-4C12-B21A-5537A0788BF5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0AD20FD5-D73A-4C84-9F47-5823B7FE5AB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0AD20FD5-D73A-4C84-9F47-5823B7FE5AB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0AD20FD5-D73A-4C84-9F47-5823B7FE5AB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0AD20FD5-D73A-4C84-9F47-5823B7FE5AB7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F24A2935-B186-449A-B9CC-1BFA07C6AA48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F24A2935-B186-449A-B9CC-1BFA07C6AA48}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F24A2935-B186-449A-B9CC-1BFA07C6AA48}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F24A2935-B186-449A-B9CC-1BFA07C6AA48}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

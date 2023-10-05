@@ -20,4 +20,9 @@
     <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="6.5.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\DistributedBanking.Data\DistributedBanking.Data.csproj" />
+    <ProjectReference Include="..\DistributedBanking.Domain\DistributedBanking.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
