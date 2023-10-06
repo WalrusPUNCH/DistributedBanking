@@ -1,4 +1,6 @@
-﻿using Serilog;
+﻿using AutoWrapper;
+using DistributedBanking.Middleware;
+using Serilog;
 
 namespace DistributedBanking.Extensions;
 
@@ -8,11 +10,12 @@ public static class ApplicationBuilderExtensions
     {
         applicationBuilder
             .UseRouting()
+            .UseAuthentication()
+            .UseAuthorization()
             .UseEndpoints(conf =>
             {
                 conf.MapControllers();
-            })
-            .UseCookiePolicy();
+            });
 
         return applicationBuilder;
     }
@@ -39,6 +42,25 @@ public static class ApplicationBuilderExtensions
                 options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
             });
 
+        return applicationBuilder;
+    }
+    
+    internal static IApplicationBuilder UseMiddleware(this IApplicationBuilder applicationBuilder)
+    {
+        applicationBuilder.UseMiddleware<ExceptionHandlingMiddleware>();
+        
+        return applicationBuilder;
+    }
+    
+    internal static IApplicationBuilder UseAutoWrapper(this IApplicationBuilder applicationBuilder)
+    {
+        applicationBuilder.UseApiResponseAndExceptionWrapper(
+            new AutoWrapperOptions 
+            { 
+                //IsApiOnly = false,
+                IgnoreWrapForOkRequests = true
+            });
+        
         return applicationBuilder;
     }
 }

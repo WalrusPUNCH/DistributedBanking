@@ -1,4 +1,6 @@
 ﻿using System.Reflection;
+using System.Text;
+using DistributedBanking.Data.Models.Identity;
 using DistributedBanking.Data.Repositories;
 using DistributedBanking.Data.Repositories.Implementation;
 using DistributedBanking.Data.Services;
@@ -6,6 +8,11 @@ using DistributedBanking.Data.Services.Implementation;
 using DistributedBanking.Domain.Options;
 using DistributedBanking.Domain.Services;
 using DistributedBanking.Domain.Services.Implementation;
+using DistributedBanking.Helpers;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Conventions;
@@ -15,12 +22,37 @@ namespace DistributedBanking.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    internal static IServiceCollection AddApi(this IServiceCollection services)
+    internal static IServiceCollection AddApi(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddControllers();
+        var jwtOptions = configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>();
+        ArgumentNullException.ThrowIfNull(jwtOptions);
         
+        services.AddControllers();
+
         services
             .AddRouting()
+            .AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(x =>
+            {
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidIssuer = jwtOptions.Issuer,
+                    ValidAudience = jwtOptions.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Key)),
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true
+                };
+            });
+        
+        services.AddAuthorization();
+        
+        services
             .AddEndpointsApiExplorer()
             .AddHttpContextAccessor();
         
@@ -36,6 +68,32 @@ public static class ServiceCollectionExtensions
             {
                 options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
                 options.UseInlineDefinitionsForEnums();
+                
+                // JWT
+                options.AddSecurityDefinition(name: "Bearer", securityScheme: new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Description = "Enter the Bearer Authorization string as following: `Bearer *JWT-Token*`",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Name = "Bearer",
+                            In = ParameterLocation.Header,
+                            Reference = new OpenApiReference
+                            {
+                                Id = "Bearer",
+                                Type = ReferenceType.SecurityScheme
+                            }
+                        },
+                        new List<string>()
+                    }
+                });
             });
         
         return services;
@@ -43,7 +101,13 @@ public static class ServiceCollectionExtensions
     
     internal static IServiceCollection ConfigureOptions(this IServiceCollection services, IConfiguration configuration)
     {
+        services.Configure<ApiBehaviorOptions>(options =>
+        {
+            options.InvalidModelStateResponseFactory = CustomInvalidModelStateResponseFactory.MakeFailedValidationResponse;
+        });
+
         services.Configure<DatabaseOptions>(configuration.GetSection(nameof(DatabaseOptions)));
+        services.Configure<JwtOptions>(configuration.GetSection(nameof(JwtOptions)));
         
         return services;
     }
@@ -52,9 +116,11 @@ public static class ServiceCollectionExtensions
     {
         services
             .AddMongoDatabase(configuration)
+            .AddMongoIdentity(configuration)
             .AddDataRepositories();
 
         services.AddTransient<IAccountService, AccountService>();
+        services.AddTransient<ITokenService, TokenService>();
         
         return services;
     }
@@ -74,6 +140,34 @@ public static class ServiceCollectionExtensions
         
         BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
         BsonSerializer.RegisterSerializer(new DateTimeSerializer(DateTimeKind.Utc));
+        
+        return services;
+    }
+
+    private static IServiceCollection AddMongoIdentity(this IServiceCollection services, IConfiguration configuration)
+    {
+        var databaseOptions = configuration.GetSection(nameof(DatabaseOptions)).Get<DatabaseOptions>();
+        ArgumentNullException.ThrowIfNull(databaseOptions);
+        
+        services.AddIdentity<ApplicationUser, ApplicationRole>(identityOptions => 
+            { 
+                // Password settings
+                identityOptions.Password.RequiredLength = 8;
+                identityOptions.Password.RequireLowercase = true; 
+                identityOptions.Password.RequireUppercase = true; 
+                identityOptions.Password.RequireNonAlphanumeric = false; 
+                identityOptions.Password.RequireDigit = true;
+
+                // Lockout settings
+                identityOptions.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
+                identityOptions.Lockout.MaxFailedAccessAttempts = 10;
+
+                // User settings
+                identityOptions.User.RequireUniqueEmail = true;
+                identityOptions.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@.-_";
+            })
+            .AddMongoDbStores<ApplicationUser, ApplicationRole, Guid>(
+                databaseOptions.ConnectionString, databaseOptions.DatabaseName);
         
         return services;
     }

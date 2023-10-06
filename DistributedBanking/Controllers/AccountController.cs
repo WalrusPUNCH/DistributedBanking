@@ -1,11 +1,15 @@
 ﻿using DistributedBanking.Data.Models;
+using DistributedBanking.Data.Models.Identity;
 using DistributedBanking.Domain.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DistributedBanking.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = RoleNames.User)]
+[Route("api/account")]
 public class AccountController : ControllerBase
 {
     private readonly IAccountService _accountService;

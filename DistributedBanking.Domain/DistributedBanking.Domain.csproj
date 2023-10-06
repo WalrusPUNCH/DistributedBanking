@@ -7,11 +7,15 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\DistributedBanking.Data\DistributedBanking.Data.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
       <Folder Include="Models\" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\DistributedBanking.Data\DistributedBanking.Data.csproj" />
+      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.15.1" />
     </ItemGroup>
 
 </Project>
