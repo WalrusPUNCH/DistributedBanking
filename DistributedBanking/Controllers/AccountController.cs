@@ -33,20 +33,6 @@ public class AccountController : ControllerBase
         }
     }
 
-    [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetAccount([FromQuery] Guid id)
-    {
-        try
-        {
-            var item = await _accountService.GetAsync(id);
-            return Ok(item);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
-
     [HttpGet]
     public async Task<IActionResult> GetAccounts()
     {
@@ -54,6 +40,20 @@ public class AccountController : ControllerBase
         {
             var items = await _accountService.GetAsync();
             return Ok(items);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+    
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetAccount([FromQuery] Guid id)
+    {
+        try
+        {
+            var item = await _accountService.GetAsync(id);
+            return Ok(item);
         }
         catch (Exception ex)
         {

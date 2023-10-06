@@ -4,12 +4,12 @@
     "description": "This document records the details of an customer",
     "type": "object",
     "properties": {
-      "first_name": {
+      "firstName": {
         "description": "First name of the customer",
         "type": "string",
         "minLength": 1
       },
-      "last_name": {
+      "lastName": {
         "description": "Last name of the customer",
         "type": "string",
         "minLength": 1
@@ -18,39 +18,29 @@
         "description": "Email of the customer",
         "type": "string"
       },
-      "phone": {
+      "phoneNumber": {
         "description": "Phone number of the customer",
         "type": "string"
       },
-      "address": {
-        "description": "Address of the customer",
-        "type": "string"
-      },
-      "birth_date": {
+      "birthDate": {
         "description": "Birth date of the customer",
         "bsonType": "date"
-      },
-      "password_hash": {
-        "description": "Hash of the password",
-        "type": "string"
       },
       "accounts": {
         "description": "List of accounts of the customer",
         "type": "array",
         "uniqueItems": true,
         "items": {
-          "bsonType": "objectId"
+          "bsonType": "binData"
         }
       }
     },
     "required": [
-      "first_name",
-      "last_name",
+      "firstName",
+      "lastName",
       "email",
-      "phone",
-      "address",
-      "birth_date",
-      "password_hash"
+      "phoneNumber",
+      "birthDate"
     ],
     "additionalProperties": true
   }

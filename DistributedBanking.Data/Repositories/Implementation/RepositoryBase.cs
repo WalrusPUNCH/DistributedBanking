@@ -35,7 +35,7 @@ public class RepositoryBase<T> : IRepositoryBase<T> where T : BaseEntity
         return await Collection.Find(filter ?? FilterDefinition<T>.Empty).ToListAsync();
     }
 
-    public async Task CreateAsync(T entity)
+    public async Task AddAsync(T entity)
     {
         if (entity == null)
         {

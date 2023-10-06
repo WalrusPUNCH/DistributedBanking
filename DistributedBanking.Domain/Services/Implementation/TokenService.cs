@@ -22,20 +22,12 @@ public class TokenService : ITokenService
         _jwtOptions = jwtOptions.Value;
     }
 
-    public async Task<(string?, string[])> GetTokenAsync(string login, string password)
+    public async Task<string> GenerateTokenAsync(ApplicationUser user)
     {
-        var user = await _userManager.FindByEmailAsync(login);
-        if (user == null)
-        {
-            return default;
-        }
-        
         var jwtSecurityToken = await CreateJwtToken(user);
         var token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
         
-        var rolesList = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
-        
-        return (token, rolesList.ToArray());
+        return token;
     }
     
     private async Task<JwtSecurityToken> CreateJwtToken(ApplicationUser user)
@@ -64,10 +56,5 @@ public class TokenService : ITokenService
             signingCredentials: signingCredentials);
         
         return jwtSecurityToken;
-    }
-
-    public bool ValidateToken(string key, string issuer, string audience, string token)
-    {
-        throw new NotImplementedException();
     }
 }

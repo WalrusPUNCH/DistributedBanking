@@ -5,7 +5,7 @@ namespace DistributedBanking.Data.Repositories;
 
 public interface IRepositoryBase<T> where T : BaseEntity
 {
-    Task CreateAsync(T entity);
+    Task AddAsync(T entity);
     Task<IReadOnlyCollection<T>> GetAllAsync();
     Task<IReadOnlyCollection<T>> GetAllAsync(Expression<Func<T, bool>> filter);
     Task<T> GetAsync(Guid id);

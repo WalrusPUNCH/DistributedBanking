@@ -16,7 +16,7 @@ public class AccountService : IAccountService
     {
         model.CreatedAt = DateTime.UtcNow;
         
-        await _accountsRepository.CreateAsync(model);
+        await _accountsRepository.AddAsync(model);
     }
 
     public async Task<AccountEntity> GetAsync(Guid id)

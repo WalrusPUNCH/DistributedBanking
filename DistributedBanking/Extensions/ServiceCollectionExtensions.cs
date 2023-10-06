@@ -17,6 +17,7 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Bson.Serialization.Serializers;
+using Mapster;
 
 namespace DistributedBanking.Extensions;
 
@@ -55,6 +56,8 @@ public static class ServiceCollectionExtensions
         services
             .AddEndpointsApiExplorer()
             .AddHttpContextAccessor();
+        
+        services.AddMapster();
         
         return services;
     }
@@ -121,6 +124,16 @@ public static class ServiceCollectionExtensions
 
         services.AddTransient<IAccountService, AccountService>();
         services.AddTransient<ITokenService, TokenService>();
+        services.AddTransient<IIdentityService, IdentityService>();
+        
+        return services;
+    }
+
+    private static IServiceCollection AddMapster(this IServiceCollection services)
+    {
+        /*TypeAdapterConfig<Person, PersonShortInfoDto>
+            .NewConfig()
+            .Map(dest => dest.FullName, src => $"{src.Title} {src.FirstName} {src.LastName}");*/
         
         return services;
     }
@@ -176,6 +189,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddTransient(typeof(IRepositoryBase<>), typeof(RepositoryBase<>));
         services.AddTransient<IAccountsRepository, AccountsRepository>();
+        services.AddTransient<ICustomersRepository, CustomersRepository>();
 
         return services;
     }
