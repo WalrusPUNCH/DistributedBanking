@@ -2,6 +2,6 @@
 
 public static class RoleNames
 {
-    public const string User = "user";
+    public const string Customer = "customer";
     public const string Worker = "worker";
 }

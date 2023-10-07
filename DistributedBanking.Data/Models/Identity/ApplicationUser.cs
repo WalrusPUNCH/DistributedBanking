@@ -3,7 +3,7 @@ using MongoDbGenericRepository.Attributes;
 
 namespace DistributedBanking.Data.Models.Identity;
 
-[CollectionName(CollectionNames.Users)]
+[CollectionName(CollectionNames.Service.Users)]
 public class ApplicationUser : MongoIdentityUser<Guid>
 {
     

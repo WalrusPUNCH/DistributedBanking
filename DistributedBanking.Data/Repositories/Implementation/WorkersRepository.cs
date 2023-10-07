@@ -5,11 +5,11 @@ using MongoDB.Driver;
 
 namespace DistributedBanking.Data.Repositories.Implementation;
 
-public class CustomersRepository : RepositoryBase<CustomerEntity>, ICustomersRepository
+public class WorkersRepository : RepositoryBase<WorkerEntity>, IWorkersRepository
 {
     private IMongoDatabase _database;
     
-    public CustomersRepository(IMongoDbFactory mongoDbFactory) : base(mongoDbFactory.GetDatabase(), CollectionNames.EndUsers)
+    public WorkersRepository(IMongoDbFactory mongoDbFactory) : base(mongoDbFactory.GetDatabase(), CollectionNames.EndUsers)
     {
         _database = mongoDbFactory.GetDatabase();
         

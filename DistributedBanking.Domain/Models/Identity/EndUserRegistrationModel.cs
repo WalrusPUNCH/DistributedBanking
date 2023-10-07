@@ -1,8 +1,7 @@
 ﻿namespace DistributedBanking.Domain.Models.Identity;
 
-public class RegistrationModel
+public class EndUserRegistrationModel
 {
-    public string Role { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public DateTime BirthDate { get; set; }

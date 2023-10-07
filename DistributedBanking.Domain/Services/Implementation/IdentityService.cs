@@ -1,4 +1,4 @@
-﻿using DistributedBanking.Data.Models;
+﻿using DistributedBanking.Data.Models.EndUsers;
 using DistributedBanking.Data.Models.Identity;
 using DistributedBanking.Data.Repositories;
 using DistributedBanking.Domain.Models.Identity;
@@ -15,6 +15,7 @@ public class IdentityService : IIdentityService
     private readonly RoleManager<ApplicationRole> _roleManager;
     private readonly ITokenService _tokenService;
     private readonly ICustomersRepository _customersRepository;
+    private readonly IWorkersRepository _workersRepository;
     private readonly ILogger<IdentityService> _logger;
 
     public IdentityService(
@@ -23,6 +24,7 @@ public class IdentityService : IIdentityService
         RoleManager<ApplicationRole> roleManager,
         ITokenService tokenService,
         ICustomersRepository customersRepository,
+        IWorkersRepository workersRepository,
         ILogger<IdentityService> logger)
     {
         _userManager = userManager;
@@ -30,6 +32,7 @@ public class IdentityService : IIdentityService
         _roleManager = roleManager;
         _tokenService = tokenService;
         _customersRepository = customersRepository;
+        _workersRepository = workersRepository;
         _logger = logger;
     }
     
@@ -44,7 +47,13 @@ public class IdentityService : IIdentityService
         return result;
     }
 
-    public async Task<(IdentityResult IdentityResult, ApplicationUser? User)> RegisterAccount(RegistrationModel registrationModel)
+    public async Task<(IdentityResult IdentityResult, ApplicationUser? User)> RegisterAccount(
+        EndUserRegistrationModel registrationModel, string role)
+    {
+        return await RegisterAccountInternal(registrationModel, role);
+    }
+    
+    private async Task<(IdentityResult IdentityResult, ApplicationUser? User)> RegisterAccountInternal(EndUserRegistrationModel registrationModel, string role) 
     {
         var appUser = new ApplicationUser
         {
@@ -60,20 +69,25 @@ public class IdentityService : IIdentityService
             return (userCreationResult, default);
         }
         
-        var roleAssignmentResult = await _userManager.AddToRoleAsync(appUser, registrationModel.Role);
-        if (roleAssignmentResult.Succeeded)
-        {
-            await _customersRepository.AddAsync(registrationModel.Adapt<CustomerEntity>());
-            
-            _logger.LogInformation("New user '{Email}' has been registered and assigned a '{Role}' role",
-                appUser.Email, registrationModel.Role);
-            
-            return (userCreationResult, appUser);
-        }
-        else
+        var roleAssignmentResult = await _userManager.AddToRoleAsync(appUser, role);
+        if (!roleAssignmentResult.Succeeded)
         {
             return (roleAssignmentResult, default);
         }
+
+        if (string.Equals(role, RoleNames.Customer, StringComparison.InvariantCultureIgnoreCase))
+        {
+            await _customersRepository.AddAsync(registrationModel.Adapt<CustomerEntity>());
+        }
+        else if (string.Equals(role, RoleNames.Worker, StringComparison.InvariantCultureIgnoreCase))
+        {
+            await _workersRepository.AddAsync(registrationModel.Adapt<WorkerEntity>());
+        }
+        
+        _logger.LogInformation("New user '{Email}' has been registered and assigned a '{Role}' role",
+            appUser.Email, role);
+            
+        return (userCreationResult, appUser);
     }
 
     public async Task<(SignInResult LoginResult, string? Token)> Login(LoginModel loginModel)

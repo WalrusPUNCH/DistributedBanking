@@ -3,7 +3,7 @@ using MongoDbGenericRepository.Attributes;
 
 namespace DistributedBanking.Data.Models.Identity;
 
-[CollectionName(CollectionNames.Roles)]
+[CollectionName(CollectionNames.Service.Roles)]
 public class ApplicationRole : MongoIdentityRole<Guid>
 {
     

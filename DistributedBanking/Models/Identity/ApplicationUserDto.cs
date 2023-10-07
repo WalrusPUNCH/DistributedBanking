@@ -1,4 +1,4 @@
-﻿namespace DistributedBanking.Models;
+﻿namespace DistributedBanking.Models.Identity;
 
 public class ApplicationUserDto
 {

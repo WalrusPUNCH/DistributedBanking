@@ -17,7 +17,6 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Bson.Serialization.Serializers;
-using Mapster;
 
 namespace DistributedBanking.Extensions;
 
@@ -190,7 +189,8 @@ public static class ServiceCollectionExtensions
         services.AddTransient(typeof(IRepositoryBase<>), typeof(RepositoryBase<>));
         services.AddTransient<IAccountsRepository, AccountsRepository>();
         services.AddTransient<ICustomersRepository, CustomersRepository>();
-
+        services.AddTransient<IWorkersRepository, WorkersRepository>();
+        
         return services;
     }
 }

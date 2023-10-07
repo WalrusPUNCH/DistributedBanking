@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace DistributedBanking.Models;
+namespace DistributedBanking.Models.Identity;
 
 public class LoginDto
 {

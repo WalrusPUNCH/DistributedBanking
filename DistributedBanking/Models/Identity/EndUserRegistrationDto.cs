@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace DistributedBanking.Models;
+namespace DistributedBanking.Models.Identity;
 
-public class RegistrationDto
+public class EndUserRegistrationDto
 {
     [Required]
     public string FirstName { get; set; }

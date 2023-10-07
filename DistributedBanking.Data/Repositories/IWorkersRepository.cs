@@ -2,7 +2,7 @@
 
 namespace DistributedBanking.Data.Repositories;
 
-public interface ICustomersRepository : IRepositoryBase<CustomerEntity>
+public interface IWorkersRepository : IRepositoryBase<WorkerEntity>
 {
     
 }

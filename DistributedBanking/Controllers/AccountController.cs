@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace DistributedBanking.Controllers;
 
 [ApiController]
-[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = RoleNames.User)]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = RoleNames.Customer)]
 [Route("api/account")]
 public class AccountController : ControllerBase
 {

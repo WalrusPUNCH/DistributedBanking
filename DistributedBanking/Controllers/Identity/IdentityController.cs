@@ -4,6 +4,7 @@ using DistributedBanking.Data.Models.Identity;
 using DistributedBanking.Domain.Models.Identity;
 using DistributedBanking.Domain.Services;
 using DistributedBanking.Models;
+using DistributedBanking.Models.Identity;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -24,16 +25,16 @@ public class IdentityController : IdentityControllerBase
         _logger = logger;
     }
     
-    [HttpPost("register")]
-    public async Task<IActionResult> RegisterUser(RegistrationDto registrationDto)
+    [HttpPost("register/customer")]
+    public async Task<IActionResult> RegisterCustomer(EndUserRegistrationDto registrationDto)
     { 
-        return await RegisterAccount(registrationDto, RoleNames.User);
+        return await RegisterAccount(registrationDto.Adapt<EndUserRegistrationModel>(), RoleNames.Customer);
     }
     
     [HttpPost("register/worker")]
-    public async Task<IActionResult> RegisterWorker(RegistrationDto signInModel)
+    public async Task<IActionResult> RegisterWorker(WorkerRegistrationDto registrationDto)
     {
-        return await RegisterAccount(signInModel, RoleNames.Worker);
+        return await RegisterAccount(registrationDto.Adapt<WorkerRegistrationModel>(), RoleNames.Worker);
     }
     
     [AllowAnonymous]
@@ -50,22 +51,17 @@ public class IdentityController : IdentityControllerBase
         throw new ApiException(ModelState.AllErrors());
     }
     
-    [Authorize]
-    [HttpGet]
+    [AllowAnonymous]
+    [HttpGet("logout")]
     public async Task<IActionResult> Logout()
     {
         await _identityService.Logout();
         return Ok();
     }
 
-    private async Task<IActionResult> RegisterAccount(RegistrationDto registrationDto, string role)
+    private async Task<IActionResult> RegisterAccount(EndUserRegistrationModel registrationModel, string role)
     {
-        var registrationModel = new RegistrationModel
-        {
-            Role = role
-        };
-        
-        var userCreationResult = await _identityService.RegisterAccount(registrationDto.Adapt(registrationModel));
+        var userCreationResult = await _identityService.RegisterAccount(registrationModel, role);
 
         if (userCreationResult.IdentityResult.Succeeded)
         {
