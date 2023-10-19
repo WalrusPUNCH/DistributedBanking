@@ -1,12 +1,16 @@
-﻿using System.ComponentModel.DataAnnotations;
-using AutoWrapper.Extensions;
+﻿using AutoWrapper.Extensions;
 using AutoWrapper.Wrappers;
+using DistributedBanking.Data.Models.Constants;
 using DistributedBanking.Domain.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace DistributedBanking.Controllers.Identity;
 
 [Route("api/identity/role")]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = RoleNames.Administrator)]
 public class RoleController : IdentityControllerBase
 {
     private readonly IIdentityService _identityService;

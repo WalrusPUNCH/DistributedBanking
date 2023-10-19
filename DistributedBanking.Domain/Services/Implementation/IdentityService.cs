@@ -1,4 +1,5 @@
-﻿using DistributedBanking.Data.Models.EndUsers;
+﻿using DistributedBanking.Data.Models.Constants;
+using DistributedBanking.Data.Models.EndUsers;
 using DistributedBanking.Data.Models.Identity;
 using DistributedBanking.Data.Repositories;
 using DistributedBanking.Domain.Models.Identity;

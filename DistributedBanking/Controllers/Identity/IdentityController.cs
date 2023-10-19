@@ -1,11 +1,11 @@
 ﻿using AutoWrapper.Extensions;
 using AutoWrapper.Wrappers;
-using DistributedBanking.Data.Models.Identity;
+using DistributedBanking.Data.Models.Constants;
 using DistributedBanking.Domain.Models.Identity;
 using DistributedBanking.Domain.Services;
-using DistributedBanking.Models;
 using DistributedBanking.Models.Identity;
 using Mapster;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -32,12 +32,12 @@ public class IdentityController : IdentityControllerBase
     }
     
     [HttpPost("register/worker")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = RoleNames.Administrator)]
     public async Task<IActionResult> RegisterWorker(WorkerRegistrationDto registrationDto)
     {
         return await RegisterAccount(registrationDto.Adapt<WorkerRegistrationModel>(), RoleNames.Worker);
     }
     
-    [AllowAnonymous]
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginDto loginDto)
     {
@@ -51,7 +51,6 @@ public class IdentityController : IdentityControllerBase
         throw new ApiException(ModelState.AllErrors());
     }
     
-    [AllowAnonymous]
     [HttpGet("logout")]
     public async Task<IActionResult> Logout()
     {

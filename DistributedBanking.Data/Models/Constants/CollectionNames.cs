@@ -1,4 +1,4 @@
-﻿namespace DistributedBanking.Data.Models;
+﻿namespace DistributedBanking.Data.Models.Constants;
 
 public static class CollectionNames
 {

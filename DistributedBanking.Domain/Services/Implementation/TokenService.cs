@@ -1,11 +1,12 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using DistributedBanking.Data.Models.Identity;
+﻿using DistributedBanking.Data.Models.Identity;
+using DistributedBanking.Domain.Models;
 using DistributedBanking.Domain.Options;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace DistributedBanking.Domain.Services.Implementation;
 
@@ -41,7 +42,7 @@ public class TokenService : ITokenService
                 new Claim(JwtRegisteredClaimNames.Sub, user.UserName ?? string.Empty),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
-                new Claim("uid", user.Id.ToString())
+                new Claim(ClaimConstants.UserIdClaim, user.Id.ToString())
             }
             .Union(userClaims)
             .Union(roleClaims);
