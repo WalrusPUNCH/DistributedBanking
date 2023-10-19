@@ -54,10 +54,31 @@ public class IdentityService : IIdentityService
         return await RegisterAccountInternal(registrationModel, role);
     }
     
-    private async Task<(IdentityResult IdentityResult, ApplicationUser? User)> RegisterAccountInternal(EndUserRegistrationModel registrationModel, string role) 
+    private async Task<(IdentityResult IdentityResult, ApplicationUser? User)> RegisterAccountInternal(EndUserRegistrationModel registrationModel, string role)
     {
+        Guid endUserId;
+        if (string.Equals(role, RoleNames.Customer, StringComparison.InvariantCultureIgnoreCase))
+        {
+            var customerEntity = registrationModel.Adapt<CustomerEntity>();
+            await _customersRepository.AddAsync(customerEntity);
+
+            endUserId = customerEntity.Id;
+        }
+        else if (string.Equals(role, RoleNames.Worker, StringComparison.InvariantCultureIgnoreCase))
+        {
+            var workerEntity = registrationModel.Adapt<WorkerEntity>();
+            await _workersRepository.AddAsync(workerEntity);
+            
+            endUserId = workerEntity.Id;
+        }
+        else
+        {
+            throw new ArgumentOutOfRangeException(nameof(role), role, "Speicified role is not supported");
+        }
+        
         var appUser = new ApplicationUser
         {
+            EndUserId = endUserId,
             UserName = registrationModel.Email,
             Email = registrationModel.Email,
             PhoneNumber = registrationModel.PhoneNumber,
@@ -74,15 +95,6 @@ public class IdentityService : IIdentityService
         if (!roleAssignmentResult.Succeeded)
         {
             return (roleAssignmentResult, default);
-        }
-
-        if (string.Equals(role, RoleNames.Customer, StringComparison.InvariantCultureIgnoreCase))
-        {
-            await _customersRepository.AddAsync(registrationModel.Adapt<CustomerEntity>());
-        }
-        else if (string.Equals(role, RoleNames.Worker, StringComparison.InvariantCultureIgnoreCase))
-        {
-            await _workersRepository.AddAsync(registrationModel.Adapt<WorkerEntity>());
         }
         
         _logger.LogInformation("New user '{Email}' has been registered and assigned a '{Role}' role",

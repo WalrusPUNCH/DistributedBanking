@@ -1,4 +1,4 @@
-﻿using DistributedBanking.Data.Models;
+﻿using DistributedBanking.Data.Models.Constants;
 using DistributedBanking.Data.Models.EndUsers;
 using DistributedBanking.Data.Services;
 using MongoDB.Driver;
@@ -12,7 +12,5 @@ public class WorkersRepository : RepositoryBase<WorkerEntity>, IWorkersRepositor
     public WorkersRepository(IMongoDbFactory mongoDbFactory) : base(mongoDbFactory.GetDatabase(), CollectionNames.EndUsers)
     {
         _database = mongoDbFactory.GetDatabase();
-        
-       // FilterBuilder = FilterBuilder.Eq()
-    }
+     }
 }

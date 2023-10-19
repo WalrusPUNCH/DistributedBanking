@@ -1,43 +1,84 @@
 ﻿using DistributedBanking.Data.Models;
 using DistributedBanking.Data.Repositories;
+using DistributedBanking.Domain.Models.Account;
+using Mapster;
 
 namespace DistributedBanking.Domain.Services.Implementation;
 
 public class AccountService : IAccountService
 {
     private readonly IAccountsRepository _accountsRepository;
+    private readonly ICustomersRepository _customersRepository;
 
-    public AccountService(IAccountsRepository accountsRepository)
+    public AccountService(
+        IAccountsRepository accountsRepository, 
+        ICustomersRepository customersRepository)
     {
         _accountsRepository = accountsRepository;
+        _customersRepository = customersRepository;
     }
     
-    public async Task CreateAsync(AccountEntity model)
+    public async Task<AccountOwnedResponseModel> CreateAsync(Guid customerId, AccountCreationModel accountCreationModel)
     {
-        model.CreatedAt = DateTime.UtcNow;
+        var account = GenerateNewAccount(customerId, accountCreationModel);
+        var accountEntity = account.Adapt<AccountEntity>();
+        await _accountsRepository.AddAsync(accountEntity);
         
-        await _accountsRepository.AddAsync(model);
+        var customerEntity = await _customersRepository.GetAsync(customerId);
+        customerEntity.Accounts.Add(accountEntity.Id);
+
+        await _customersRepository.UpdateAsync(customerEntity);
+        
+        return accountEntity.Adapt<AccountOwnedResponseModel>();
     }
 
-    public async Task<AccountEntity> GetAsync(Guid id)
+    private static AccountModel GenerateNewAccount(Guid customerId, AccountCreationModel accountModel)
     {
-        return await _accountsRepository.GetAsync(id);
+        return new AccountModel
+        {
+            Name = accountModel.Name,
+            Type = accountModel.Type,
+            Balance = 0,
+            ExpirationDate = Generator.GenerateExpirationDate(),
+            SecurityCode = Generator.GenerateSecurityCode(),
+            Owner = customerId,
+            CreatedAt = DateTime.UtcNow
+        };
     }
 
-    public async Task<IEnumerable<AccountEntity>> GetAsync()
+    public async Task<AccountOwnedResponseModel> GetAsync(Guid id)
     {
-        return await _accountsRepository.GetAsync();
+        var account = await _accountsRepository.GetAsync(id);
+
+        return account.Adapt<AccountOwnedResponseModel>();
+    }
+
+    public async Task<IEnumerable<AccountResponseModel>> GetCustomersAccountsAsync(Guid customerId)
+    {
+        var accounts = await _accountsRepository.GetAsync(x => x.Owner == customerId);
+        
+        return accounts.Adapt<AccountResponseModel[]>();
+    }
+
+    public async Task<IEnumerable<AccountOwnedResponseModel>> GetAsync()
+    {
+        var accounts = await _accountsRepository.GetAsync();
+        
+        return accounts.Adapt<AccountOwnedResponseModel[]>();
     }
 
     public async Task UpdateAsync(AccountEntity model)
     {
-        model.EditedAt = DateTime.UtcNow;
-
         await _accountsRepository.UpdateAsync(model);
     }
 
     public async Task DeleteAsync(Guid id)
     {
+        var accountEntity = await GetAsync(id);
         await _accountsRepository.RemoveAsync(id);
+        
+        var customerEntity = await _customersRepository.GetAsync(accountEntity.Owner);
+        customerEntity.Accounts.Remove(accountEntity.Id);
+        await _customersRepository.UpdateAsync(customerEntity);
     }
 }

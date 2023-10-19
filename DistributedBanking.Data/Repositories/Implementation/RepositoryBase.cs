@@ -1,6 +1,7 @@
-﻿using System.Linq.Expressions;
-using DistributedBanking.Data.Models;
+﻿using DistributedBanking.Data.Models;
+using MongoDB.Bson;
 using MongoDB.Driver;
+using System.Linq.Expressions;
 
 namespace DistributedBanking.Data.Repositories.Implementation;
 
@@ -8,34 +9,35 @@ public class RepositoryBase<T> : IRepositoryBase<T> where T : BaseEntity
 {
     protected readonly IMongoCollection<T> Collection;
     protected readonly FilterDefinitionBuilder<T> FilterBuilder = Builders<T>.Filter;
-
+    private readonly MongoCollectionSettings _mongoCollectionSettings = new() { GuidRepresentation = GuidRepresentation.Standard };
+    
     protected RepositoryBase(IMongoDatabase database, string collectionName)
     {
-        Collection = database.GetCollection<T>(collectionName);
+        Collection = database.GetCollection<T>(collectionName, _mongoCollectionSettings);
     }
 
-    public async Task<IReadOnlyCollection<T>> GetAllAsync()
+    public virtual async Task<IReadOnlyCollection<T>> GetAllAsync()
     {
         return await Collection.Find(FilterBuilder.Empty).ToListAsync();
     }
 
-    public async Task<IReadOnlyCollection<T>> GetAllAsync(Expression<Func<T, bool>> filter)
+    public virtual async Task<IReadOnlyCollection<T>> GetAllAsync(Expression<Func<T, bool>> filter)
     {
         return await Collection.Find(filter).ToListAsync();
     }
 
-    public async Task<T> GetAsync(Guid id)
+    public virtual async Task<T> GetAsync(Guid id)
     {
-        FilterDefinition<T> filter = FilterBuilder.Eq(e => e.Id, id);
+        var filter = FilterBuilder.Eq(e => e.Id, id);
         return await Collection.Find(filter).FirstOrDefaultAsync();
     }
 
-    public async Task<IEnumerable<T>> GetAsync(Expression<Func<T, bool>>? filter)
+    public virtual async Task<IEnumerable<T>> GetAsync(Expression<Func<T, bool>>? filter)
     {
         return await Collection.Find(filter ?? FilterDefinition<T>.Empty).ToListAsync();
     }
 
-    public async Task AddAsync(T entity)
+    public virtual async Task AddAsync(T entity)
     {
         if (entity == null)
         {
@@ -44,7 +46,7 @@ public class RepositoryBase<T> : IRepositoryBase<T> where T : BaseEntity
         await Collection.InsertOneAsync(entity);
     }
 
-    public async Task UpdateAsync(T entity)
+    public virtual async Task UpdateAsync(T entity)
     {
         if (entity == null)
         {
@@ -54,7 +56,7 @@ public class RepositoryBase<T> : IRepositoryBase<T> where T : BaseEntity
         await Collection.ReplaceOneAsync(filter, entity);
     }
 
-    public async Task RemoveAsync(Guid id)
+    public virtual async Task RemoveAsync(Guid id)
     {
         FilterDefinition<T> filter = FilterBuilder.Eq(e => e.Id, id);
         await Collection.DeleteOneAsync(filter);

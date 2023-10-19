@@ -7,5 +7,5 @@ namespace DistributedBanking.Data.Models.Identity;
 [CollectionName(CollectionNames.Service.Users)]
 public class ApplicationUser : MongoIdentityUser<Guid>
 {
-    
+    public Guid EndUserId { get; set; }
 }

@@ -26,12 +26,14 @@ public class IdentityController : IdentityControllerBase
     }
     
     [HttpPost("register/customer")]
+    [ProducesResponseType(typeof(ApplicationUserDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> RegisterCustomer(EndUserRegistrationDto registrationDto)
     { 
         return await RegisterAccount(registrationDto.Adapt<EndUserRegistrationModel>(), RoleNames.Customer);
     }
     
     [HttpPost("register/worker")]
+    [ProducesResponseType(typeof(ApplicationUserDto), StatusCodes.Status200OK)]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = RoleNames.Administrator)]
     public async Task<IActionResult> RegisterWorker(WorkerRegistrationDto registrationDto)
     {
@@ -39,6 +41,7 @@ public class IdentityController : IdentityControllerBase
     }
     
     [HttpPost("login")]
+    [ProducesResponseType(typeof(JwtTokenDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> Login(LoginDto loginDto)
     {
         var loginResult = await _identityService.Login(loginDto.Adapt<LoginModel>());

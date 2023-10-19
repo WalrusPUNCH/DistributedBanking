@@ -42,7 +42,7 @@ public class TokenService : ITokenService
                 new Claim(JwtRegisteredClaimNames.Sub, user.UserName ?? string.Empty),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
-                new Claim(ClaimConstants.UserIdClaim, user.Id.ToString())
+                new Claim(ClaimConstants.UserIdClaim, user.EndUserId.ToString())
             }
             .Union(userClaims)
             .Union(roleClaims);

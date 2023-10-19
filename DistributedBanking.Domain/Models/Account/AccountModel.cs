@@ -1,8 +1,8 @@
 ﻿using DistributedBanking.Data.Models.Constants;
 
-namespace DistributedBanking.Data.Models;
+namespace DistributedBanking.Domain.Models.Account;
 
-public class AccountEntity : BaseEntity
+public class AccountModel
 {
     public string Name { get; set; }
     public AccountType Type { get; set; }

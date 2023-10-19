@@ -36,11 +36,7 @@ public class ExceptionHandlingMiddleware
         {
             code = HttpStatusCode.UnprocessableEntity;
         }
-        else if (exception is KeyNotFoundException)
-        {
-            code = HttpStatusCode.NotFound;
-        }
-
+        
         var fullErrorMessage = GetErrorMessage(exception);
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int)code;

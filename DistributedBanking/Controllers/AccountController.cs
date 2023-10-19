@@ -1,6 +1,9 @@
-﻿using DistributedBanking.Data.Models;
-using DistributedBanking.Data.Models.Identity;
+﻿using DistributedBanking.Data.Models.Constants;
+using DistributedBanking.Domain.Models.Account;
 using DistributedBanking.Domain.Services;
+using DistributedBanking.Extensions;
+using DistributedBanking.Models.Account;
+using Mapster;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,44 +23,48 @@ public class AccountController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateAccount([FromBody] AccountEntity model)
+    [ProducesResponseType(typeof(AccountOwnedResponseModel), StatusCodes.Status201Created)]
+    public async Task<IActionResult> CreateAccount(AccountCreationDto accountDto)
     {
-        try
-        {
-            await _accountService.CreateAsync(model);
-            return Ok();
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        var userId = User.GetId();
+        var createdAccount = await _accountService.CreateAsync(userId, accountDto.Adapt<AccountCreationModel>());
+            
+        return Created(createdAccount.Id.ToString(), createdAccount);
     }
-
+    
     [HttpGet]
+    [ProducesResponseType(typeof(IEnumerable<AccountOwnedResponseModel>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAccounts()
     {
-        try
-        {
-            var items = await _accountService.GetAsync();
-            return Ok(items);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        var items = await _accountService.GetAsync();
+        
+        return Ok(items);
+    }
+    
+    [HttpGet("owned/{ownerId:guid}")]
+    [ProducesResponseType(typeof(IEnumerable<AccountResponseModel>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetCustomerAccounts(Guid ownerId)
+    {
+        var items = await _accountService.GetCustomersAccountsAsync(ownerId);
+        
+        return Ok(items);
     }
     
     [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetAccount([FromQuery] Guid id)
+    [ProducesResponseType(typeof(AccountOwnedResponseModel), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAccount(Guid id)
     {
-        try
-        {
-            var item = await _accountService.GetAsync(id);
-            return Ok(item);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        var item = await _accountService.GetAsync(id);
+        
+        return Ok(item);
+    }
+    
+    [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> DeleteAccount(Guid id)
+    {
+        await _accountService.DeleteAsync(id);
+        
+        return Ok();
     }
 }

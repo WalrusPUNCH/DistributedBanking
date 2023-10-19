@@ -2,5 +2,5 @@
 
 public class CustomerEntity : EndUserEntityBase
 {
-    public required Guid[] Accounts { get; set; } = Array.Empty<Guid>();
+    public required List<Guid> Accounts { get; set; } = new ();
 }

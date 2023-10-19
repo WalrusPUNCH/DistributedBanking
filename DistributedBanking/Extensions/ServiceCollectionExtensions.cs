@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-using System.Text;
-using DistributedBanking.Data.Models.Identity;
+﻿using DistributedBanking.Data.Models.Identity;
 using DistributedBanking.Data.Repositories;
 using DistributedBanking.Data.Repositories.Implementation;
 using DistributedBanking.Data.Services;
@@ -17,6 +15,9 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Bson.Serialization.Serializers;
+using System.Reflection;
+using System.Text;
+using System.Text.Json.Serialization;
 
 namespace DistributedBanking.Extensions;
 
@@ -27,7 +28,8 @@ public static class ServiceCollectionExtensions
         var jwtOptions = configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>();
         ArgumentNullException.ThrowIfNull(jwtOptions);
         
-        services.AddControllers();
+        services.AddControllers()
+            .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
         services
             .AddRouting()
@@ -141,9 +143,9 @@ public static class ServiceCollectionExtensions
     {
         var databaseOptions = configuration.GetSection(nameof(DatabaseOptions)).Get<DatabaseOptions>();
         ArgumentNullException.ThrowIfNull(databaseOptions);
-        
+
         services.AddSingleton<IMongoDbFactory>(new MongoDbFactory(databaseOptions.ConnectionString, databaseOptions.DatabaseName));
-        
+
         var pack = new ConventionPack
         {
             new CamelCaseElementNameConvention()
@@ -152,8 +154,8 @@ public static class ServiceCollectionExtensions
         
         BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
         BsonSerializer.RegisterSerializer(new DateTimeSerializer(DateTimeKind.Utc));
-        
-        return services;
+
+       return services;
     }
 
     private static IServiceCollection AddMongoIdentity(this IServiceCollection services, IConfiguration configuration)
