@@ -5,8 +5,8 @@ namespace DistributedBanking.Models.Identity;
 public class WorkerRegistrationDto : EndUserRegistrationDto
 {
     [Required]
-    public string Position { get; set; }
+    public required string Position { get; set; }
     
     [Required]
-    public AddressDto Address { get; set; }
+    public required AddressDto Address { get; set; }
 }

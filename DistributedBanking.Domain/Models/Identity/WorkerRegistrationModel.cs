@@ -2,7 +2,7 @@
 
 public class WorkerRegistrationModel : EndUserRegistrationModel
 {
-    public string Position { get; set; }
+    public required string Position { get; set; }
     
-    public AddressModel Address { get; set; }
+    public required AddressModel Address { get; set; }
 }

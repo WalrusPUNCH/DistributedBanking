@@ -5,20 +5,20 @@ namespace DistributedBanking.Models.Identity;
 public class EndUserRegistrationDto
 {
     [Required]
-    public string FirstName { get; set; }
+    public required string FirstName { get; set; }
     
     [Required]
-    public string LastName { get; set; }
+    public required string LastName { get; set; }
     
     [Required]
-    public DateTime BirthDate { get; set; }
+    public required DateTime BirthDate { get; set; }
 
     [Required, Phone]
-    public string PhoneNumber { get; set; }
+    public required string PhoneNumber { get; set; }
  
     [Required, EmailAddress(ErrorMessage = "Invalid Email")]
-    public string Email { get; set; }
+    public required string Email { get; set; }
  
     [Required]
-    public string Password { get; set; }
+    public required string Password { get; set; }
 }
