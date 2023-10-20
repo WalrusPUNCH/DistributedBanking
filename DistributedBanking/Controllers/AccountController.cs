@@ -12,6 +12,9 @@ namespace DistributedBanking.Controllers;
 
 [ApiController]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = RoleNames.Customer)]
+[ProducesResponseType(StatusCodes.Status400BadRequest)]
+[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+[ProducesResponseType(StatusCodes.Status403Forbidden)]
 [Route("api/account")]
 public class AccountController : ControllerBase
 {
@@ -26,7 +29,7 @@ public class AccountController : ControllerBase
     [ProducesResponseType(typeof(AccountOwnedResponseModel), StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateAccount(AccountCreationDto accountDto)
     {
-        var userId = User.GetId();
+        var userId = User.Id();
         var createdAccount = await _accountService.CreateAsync(userId, accountDto.Adapt<AccountCreationModel>());
             
         return Created(createdAccount.Id.ToString(), createdAccount);
@@ -45,7 +48,7 @@ public class AccountController : ControllerBase
     [ProducesResponseType(typeof(IEnumerable<AccountResponseModel>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetCustomerAccounts(Guid ownerId)
     {
-        var items = await _accountService.GetCustomersAccountsAsync(ownerId);
+        var items = await _accountService.GetCustomerAccountsAsync(ownerId);
         
         return Ok(items);
     }

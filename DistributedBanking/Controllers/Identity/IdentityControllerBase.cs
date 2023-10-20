@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace DistributedBanking.Controllers.Identity;
 
 [ApiController]
+[ProducesResponseType(StatusCodes.Status400BadRequest)]
+[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+[ProducesResponseType(StatusCodes.Status403Forbidden)]
 public class IdentityControllerBase  : ControllerBase
 {
     private readonly ILogger<IdentityControllerBase> _logger;

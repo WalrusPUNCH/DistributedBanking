@@ -8,10 +8,12 @@ public interface IIdentityService
 {
     Task<IdentityResult> CreateRole(string roleName);
 
-    Task<(IdentityResult IdentityResult, ApplicationUser? User)> RegisterAccount(
+    Task<(IdentityResult IdentityResult, ApplicationUser? User)> RegisterUser(
         EndUserRegistrationModel registrationModel, string role);
 
     Task<(SignInResult LoginResult, string? Token)> Login(LoginModel loginModel);
 
     Task Logout();
+
+    Task DeleteUser(string email);
 }

@@ -53,7 +53,7 @@ public class AccountService : IAccountService
         return account.Adapt<AccountOwnedResponseModel>();
     }
 
-    public async Task<IEnumerable<AccountResponseModel>> GetCustomersAccountsAsync(Guid customerId)
+    public async Task<IEnumerable<AccountResponseModel>> GetCustomerAccountsAsync(Guid customerId)
     {
         var accounts = await _accountsRepository.GetAsync(x => x.Owner == customerId);
         
@@ -74,11 +74,16 @@ public class AccountService : IAccountService
 
     public async Task DeleteAsync(Guid id)
     {
-        var accountEntity = await GetAsync(id);
-        await _accountsRepository.RemoveAsync(id);
+        var accountEntity = await _accountsRepository.GetAsync(id);
+        if (!accountEntity.Owner.HasValue)
+        {
+            return;
+        }
         
-        var customerEntity = await _customersRepository.GetAsync(accountEntity.Owner);
+        var customerEntity = await _customersRepository.GetAsync(accountEntity.Owner.Value);
         customerEntity.Accounts.Remove(accountEntity.Id);
         await _customersRepository.UpdateAsync(customerEntity);
+        accountEntity.Owner = null;
+        await UpdateAsync(accountEntity);
     }
 }

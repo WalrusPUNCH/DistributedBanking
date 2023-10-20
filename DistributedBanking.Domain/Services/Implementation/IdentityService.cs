@@ -17,6 +17,7 @@ public class IdentityService : IIdentityService
     private readonly ITokenService _tokenService;
     private readonly ICustomersRepository _customersRepository;
     private readonly IWorkersRepository _workersRepository;
+    private readonly IAccountService _accountService;
     private readonly ILogger<IdentityService> _logger;
 
     public IdentityService(
@@ -26,6 +27,7 @@ public class IdentityService : IIdentityService
         ITokenService tokenService,
         ICustomersRepository customersRepository,
         IWorkersRepository workersRepository,
+        IAccountService accountService,
         ILogger<IdentityService> logger)
     {
         _userManager = userManager;
@@ -34,6 +36,7 @@ public class IdentityService : IIdentityService
         _tokenService = tokenService;
         _customersRepository = customersRepository;
         _workersRepository = workersRepository;
+        _accountService = accountService;
         _logger = logger;
     }
     
@@ -48,13 +51,13 @@ public class IdentityService : IIdentityService
         return result;
     }
 
-    public async Task<(IdentityResult IdentityResult, ApplicationUser? User)> RegisterAccount(
+    public async Task<(IdentityResult IdentityResult, ApplicationUser? User)> RegisterUser(
         EndUserRegistrationModel registrationModel, string role)
     {
-        return await RegisterAccountInternal(registrationModel, role);
+        return await RegisterUserInternal(registrationModel, role);
     }
     
-    private async Task<(IdentityResult IdentityResult, ApplicationUser? User)> RegisterAccountInternal(EndUserRegistrationModel registrationModel, string role)
+    private async Task<(IdentityResult IdentityResult, ApplicationUser? User)> RegisterUserInternal(EndUserRegistrationModel registrationModel, string role)
     {
         Guid endUserId;
         if (string.Equals(role, RoleNames.Customer, StringComparison.InvariantCultureIgnoreCase))
@@ -124,5 +127,30 @@ public class IdentityService : IIdentityService
     public async Task Logout()
     {
         await _signInManager.SignOutAsync();
+    }
+
+
+    public async Task DeleteUser(string email)
+    {
+        var appUser = await _userManager.FindByEmailAsync(email);
+        if (appUser != null)
+        {
+            if (await _userManager.IsInRoleAsync(appUser, RoleNames.Customer))
+            {
+                var customer = await _customersRepository.GetAsync(appUser.EndUserId);
+                foreach (var customerAccountId in customer.Accounts)
+                {
+                    await _accountService.DeleteAsync(customerAccountId);
+                }
+                
+                await _customersRepository.RemoveAsync(appUser.EndUserId);
+            }
+            else if (await _userManager.IsInRoleAsync(appUser, RoleNames.Worker))
+            {
+                await _workersRepository.RemoveAsync(appUser.EndUserId);
+            }
+            
+            await _userManager.DeleteAsync(appUser);
+        }
     }
 }
