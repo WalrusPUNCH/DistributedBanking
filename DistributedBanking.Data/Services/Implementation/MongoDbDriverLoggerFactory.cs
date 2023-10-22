@@ -2,7 +2,7 @@
 
 namespace DistributedBanking.Data.Services.Implementation;
 
-public class MongoDbDriverLoggerFactory
+public static class MongoDbDriverLoggerFactory
 {
     private static ILoggerFactory? _factory;
     public static ILoggerFactory LoggerFactory
@@ -15,6 +15,7 @@ public class MongoDbDriverLoggerFactory
             }
             
             _factory = ConfigureLogger();
+            
             return _factory;
         }
     }

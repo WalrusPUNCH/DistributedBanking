@@ -53,6 +53,16 @@ public class AccountController : ControllerBase
         return Ok(items);
     }
     
+    [HttpGet("owned")]
+    [ProducesResponseType(typeof(IEnumerable<AccountResponseModel>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetCustomerAccounts()
+    {        
+        var userId = User.Id();
+        var items = await _accountService.GetCustomerAccountsAsync(userId);
+        
+        return Ok(items);
+    }
+   
     [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(AccountOwnedResponseModel), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAccount(Guid id)

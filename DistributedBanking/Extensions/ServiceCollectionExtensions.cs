@@ -123,9 +123,10 @@ public static class ServiceCollectionExtensions
             .AddMongoIdentity(configuration)
             .AddDataRepositories();
 
-        services.AddTransient<IAccountService, AccountService>();
         services.AddTransient<ITokenService, TokenService>();
         services.AddTransient<IIdentityService, IdentityService>();
+        services.AddTransient<IAccountService, AccountService>();
+        services.AddTransient<ITransactionService, TransactionService>();
         
         return services;
     }
@@ -192,6 +193,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<IAccountsRepository, AccountsRepository>();
         services.AddTransient<ICustomersRepository, CustomersRepository>();
         services.AddTransient<IWorkersRepository, WorkersRepository>();
+        services.AddTransient<ITransactionsRepository, TransactionsRepository>();
         
         return services;
     }

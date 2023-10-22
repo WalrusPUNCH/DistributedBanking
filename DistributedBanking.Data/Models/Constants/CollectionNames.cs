@@ -10,4 +10,5 @@ public static class CollectionNames
     
     public const string EndUsers = "end_users";
     public const string Accounts = "accounts";
+    public const string Transactions = "transactions";
 }

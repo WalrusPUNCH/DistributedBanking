@@ -60,6 +60,14 @@ public class AccountService : IAccountService
         return accounts.Adapt<AccountResponseModel[]>();
     }
 
+    public async Task<bool> BelongsTo(Guid accountId, Guid customerId)
+    {
+        var account = await _accountsRepository.GetAsync(
+            a => a.Id == accountId && a.Owner != null && a.Owner == customerId);
+
+        return account.Any();
+    }
+
     public async Task<IEnumerable<AccountOwnedResponseModel>> GetAsync()
     {
         var accounts = await _accountsRepository.GetAsync();
