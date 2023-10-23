@@ -74,10 +74,22 @@ public class IdentityController : IdentityControllerBase
         return Ok();
     }
 
+    [HttpPost("customer/update_passport")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = RoleNames.Customer)]
+    public async Task<IActionResult> UpdateCustomerPersonalInformation(CustomerPassportDto customerPassportDto)
+    {
+        var customerId = User.Id();
+        var operationStatus = await _identityService.UpdateCustomerPersonalInformation(customerId, customerPassportDto.Adapt<CustomerPassportModel>());
+
+        return operationStatus.EndedSuccessfully 
+            ? Ok() 
+            : BadRequest(operationStatus.Message);
+    }
+
     private async Task<IActionResult> RegisterUser(EndUserRegistrationModel registrationModel, string role)
     {
         var userCreationResult = await _identityService.RegisterUser(registrationModel, role);
-
         if (userCreationResult.IdentityResult.Succeeded)
         {
             return Created(userCreationResult.User!.Id.ToString(), userCreationResult.User.Adapt<ApplicationUserDto>());

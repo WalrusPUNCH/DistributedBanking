@@ -1,6 +1,7 @@
 ﻿using DistributedBanking.Data.Models.Constants;
 using DistributedBanking.Data.Repositories;
 using DistributedBanking.Domain.Mapping;
+using DistributedBanking.Domain.Models;
 using DistributedBanking.Domain.Models.Transaction;
 using Mapster;
 using Microsoft.Extensions.Logging;
@@ -23,14 +24,14 @@ public class TransactionService : ITransactionService
         _logger = logger;
     }
 
-    public async Task<TransactionStatusModel> Deposit(OneWayTransactionModel depositTransactionModel)
+    public async Task<OperationStatusModel> Deposit(OneWayTransactionModel depositTransactionModel)
     {
         try
         {
             var account = await _accountsRepository.GetAsync(depositTransactionModel.SourceAccountId);
             if (!AccountValidator.IsAccountValid(account))
             {
-                return TransactionStatusModel.Fail("Account is expired.");
+                return OperationStatusModel.Fail("Account is expired.");
             }
             
             account.Balance += depositTransactionModel.Amount;
@@ -39,29 +40,29 @@ public class TransactionService : ITransactionService
             var transaction = depositTransactionModel.AdaptToEntity(TransactionType.Deposit);
             await _transactionsRepository.AddAsync(transaction);
             
-            return TransactionStatusModel.Success();
+            return OperationStatusModel.Success();
         }
         catch (Exception exception)
         {
-            _logger.LogError(exception, "Unable to perform a deposit for '{SourceAccountId}' account", depositTransactionModel.SourceAccountId);
+            _logger.LogError(exception, "Unable to perform a deposit for '{SourceAccountId}' account. Try again later", depositTransactionModel.SourceAccountId);
             throw;
         }
     }
 
-    public async Task<TransactionStatusModel> Withdraw(OneWaySecuredTransactionModel withdrawTransactionModel)
+    public async Task<OperationStatusModel> Withdraw(OneWaySecuredTransactionModel withdrawTransactionModel)
     {
         try
         {
             var account = await _accountsRepository.GetAsync(withdrawTransactionModel.SourceAccountId);
             if (!AccountValidator.IsAccountValid(account, withdrawTransactionModel.SecurityCode))
             {
-                return TransactionStatusModel.Fail("Provided account information is not valid. Account is expired or entered " +
+                return OperationStatusModel.Fail("Provided account information is not valid. Account is expired or entered " +
                                                    "security code is not correct.");
             }
             
             if (account.Balance < withdrawTransactionModel.Amount)
             {
-                return TransactionStatusModel.Fail("Insufficient funds. " +
+                return OperationStatusModel.Fail("Insufficient funds. " +
                                                    "The transaction cannot be completed due to a lack of available funds in the account.");
             }
             
@@ -71,16 +72,16 @@ public class TransactionService : ITransactionService
             var transaction = withdrawTransactionModel.AdaptToEntity(TransactionType.Withdrawal);
             await _transactionsRepository.AddAsync(transaction);
             
-            return TransactionStatusModel.Success();
+            return OperationStatusModel.Success();
         }
         catch (Exception exception)
         {
-            _logger.LogError(exception, "Unable to perform a withdrawal from '{SourceAccountId}' account", withdrawTransactionModel.SourceAccountId);
+            _logger.LogError(exception, "Unable to perform a withdrawal from '{SourceAccountId}' account. Try again later", withdrawTransactionModel.SourceAccountId);
             throw;
         }
     }
 
-    public async Task<TransactionStatusModel> Transfer(TwoWayTransactionModel transferTransactionModel)
+    public async Task<OperationStatusModel> Transfer(TwoWayTransactionModel transferTransactionModel)
     {
         try
         {
@@ -88,18 +89,18 @@ public class TransactionService : ITransactionService
             var sourceAccount = await _accountsRepository.GetAsync(transferTransactionModel.SourceAccountId);
             if (!AccountValidator.IsAccountValid(sourceAccount, transferTransactionModel.SourceAccountSecurityCode))
             {
-                return TransactionStatusModel.Fail("Provided account information is not valid. Account is expired or entered " +
+                return OperationStatusModel.Fail("Provided account information is not valid. Account is expired or entered " +
                                                    "security code is not correct.");
             }
             
             if (!AccountValidator.IsAccountValid(destinationAccount))
             {
-                return TransactionStatusModel.Fail("Destination account information is not valid. Account is probably expired.");
+                return OperationStatusModel.Fail("Destination account information is not valid. Account is probably expired.");
             }
             
             if (sourceAccount.Balance < transferTransactionModel.Amount)
             {
-                return TransactionStatusModel.Fail("Insufficient funds. " +
+                return OperationStatusModel.Fail("Insufficient funds. " +
                                                    "The transaction cannot be completed due to a lack of available funds in the account.");
             }
             
@@ -112,11 +113,11 @@ public class TransactionService : ITransactionService
             var transaction = transferTransactionModel.AdaptToEntity(TransactionType.Transfer);
             await _transactionsRepository.AddAsync(transaction);
             
-            return TransactionStatusModel.Success();
+            return OperationStatusModel.Success();
         }
         catch (Exception exception)
         {
-            _logger.LogError(exception, "Unable to perform a transfer from '{SourceAccountId}' account to '{DestinationAccountId}' account", 
+            _logger.LogError(exception, "Unable to perform a transfer from '{SourceAccountId}' account to '{DestinationAccountId}' account. Try again later", 
                 transferTransactionModel.SourceAccountId, transferTransactionModel.DestinationAccountId);
             throw;
         }

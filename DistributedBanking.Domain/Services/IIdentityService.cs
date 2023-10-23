@@ -1,4 +1,5 @@
 ﻿using DistributedBanking.Data.Models.Identity;
+using DistributedBanking.Domain.Models;
 using DistributedBanking.Domain.Models.Identity;
 using Microsoft.AspNetCore.Identity;
 
@@ -10,10 +11,12 @@ public interface IIdentityService
 
     Task<(IdentityResult IdentityResult, ApplicationUser? User)> RegisterUser(
         EndUserRegistrationModel registrationModel, string role);
+    
+    Task DeleteUser(string email);
 
     Task<(SignInResult LoginResult, string? Token)> Login(LoginModel loginModel);
 
     Task Logout();
 
-    Task DeleteUser(string email);
+    Task<OperationStatusModel> UpdateCustomerPersonalInformation(Guid customerId, CustomerPassportModel customerPassport);
 }

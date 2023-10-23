@@ -2,6 +2,7 @@
 using DistributedBanking.Data.Models.EndUsers;
 using DistributedBanking.Data.Models.Identity;
 using DistributedBanking.Data.Repositories;
+using DistributedBanking.Domain.Models;
 using DistributedBanking.Domain.Models.Identity;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
@@ -76,7 +77,7 @@ public class IdentityService : IIdentityService
         }
         else
         {
-            throw new ArgumentOutOfRangeException(nameof(role), role, "Speicified role is not supported");
+            throw new ArgumentOutOfRangeException(nameof(role), role, "Specified role is not supported");
         }
         
         var appUser = new ApplicationUser
@@ -129,7 +130,6 @@ public class IdentityService : IIdentityService
         await _signInManager.SignOutAsync();
     }
 
-
     public async Task DeleteUser(string email)
     {
         var appUser = await _userManager.FindByEmailAsync(email);
@@ -151,6 +151,24 @@ public class IdentityService : IIdentityService
             }
             
             await _userManager.DeleteAsync(appUser);
+        }
+    }
+
+    public async Task<OperationStatusModel> UpdateCustomerPersonalInformation(Guid customerId, CustomerPassportModel customerPassport)
+    {
+        try
+        {
+            var customer = await _customersRepository.GetAsync(customerId);
+            customer.Passport = customerPassport.Adapt<CustomerPassport>();
+
+            await _customersRepository.UpdateAsync(customer);
+            
+            return OperationStatusModel.Success();
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Unable to update personal information. Try again later");
+            throw;
         }
     }
 }

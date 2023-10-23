@@ -1,12 +1,13 @@
-﻿using DistributedBanking.Domain.Models.Transaction;
+﻿using DistributedBanking.Domain.Models;
+using DistributedBanking.Domain.Models.Transaction;
 
 namespace DistributedBanking.Domain.Services;
 
 public interface ITransactionService
 {
-    Task<TransactionStatusModel> Deposit(OneWayTransactionModel depositTransactionModel);
-    Task<TransactionStatusModel> Withdraw(OneWaySecuredTransactionModel withdrawTransactionModel);
-    Task<TransactionStatusModel> Transfer(TwoWayTransactionModel transferTransactionModel);
+    Task<OperationStatusModel> Deposit(OneWayTransactionModel depositTransactionModel);
+    Task<OperationStatusModel> Withdraw(OneWaySecuredTransactionModel withdrawTransactionModel);
+    Task<OperationStatusModel> Transfer(TwoWayTransactionModel transferTransactionModel);
     Task<decimal> GetBalance(Guid accountId);
     Task<IEnumerable<TransactionResponseModel>> GetAccountTransactionHistory(Guid accountId);
 }

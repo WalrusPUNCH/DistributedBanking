@@ -21,4 +21,7 @@ public class EndUserRegistrationDto
  
     [Required]
     public required string Password { get; set; }
+    
+    [Required]
+    public required CustomerPassportDto Passport { get; set; }
 }
