@@ -6,11 +6,11 @@ public static class AccountValidator
 {
     public static bool IsAccountValid(AccountEntity account, string enteredSecurityCode)
     {
-        return account.ExpirationDate < DateTime.UtcNow && string.Equals(enteredSecurityCode, account.SecurityCode);
+        return account.ExpirationDate > DateTime.UtcNow && string.Equals(enteredSecurityCode, account.SecurityCode);
     }
     
     public static bool IsAccountValid(AccountEntity account)
     {
-        return account.ExpirationDate < DateTime.UtcNow;
+        return account.ExpirationDate > DateTime.UtcNow;
     }
 }

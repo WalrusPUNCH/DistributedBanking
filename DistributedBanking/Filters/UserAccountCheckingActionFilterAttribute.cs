@@ -30,8 +30,9 @@ public class UserAccountCheckingActionFilterAttribute : Attribute, IAsyncActionF
 
         if (!sourceAccountId.HasValue)
         {
-            sourceAccountId = context.HttpContext.Request.Query.TryGetValue("accountId", out var value) && !string.IsNullOrWhiteSpace(value)
-                ? new Guid(value!)
+            sourceAccountId = context.HttpContext.Request.RouteValues.TryGetValue("accountId", out var value) 
+                              && value is string stringValue && !string.IsNullOrWhiteSpace(stringValue) 
+                ? new Guid(stringValue)
                 : null;
         }
 

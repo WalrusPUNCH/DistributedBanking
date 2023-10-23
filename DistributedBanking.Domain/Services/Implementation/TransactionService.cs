@@ -91,6 +91,12 @@ public class TransactionService : ITransactionService
                 return TransactionStatusModel.Fail("Provided account information is not valid. Account is expired or entered " +
                                                    "security code is not correct.");
             }
+            
+            if (!AccountValidator.IsAccountValid(destinationAccount))
+            {
+                return TransactionStatusModel.Fail("Destination account information is not valid. Account is probably expired.");
+            }
+            
             if (sourceAccount.Balance < transferTransactionModel.Amount)
             {
                 return TransactionStatusModel.Fail("Insufficient funds. " +

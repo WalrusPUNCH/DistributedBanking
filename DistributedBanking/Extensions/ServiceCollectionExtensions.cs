@@ -18,6 +18,9 @@ using MongoDB.Bson.Serialization.Serializers;
 using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
+using DistributedBanking.Data.Models;
+using DistributedBanking.Domain.Models.Transaction;
+using Mapster;
 
 namespace DistributedBanking.Extensions;
 
@@ -137,6 +140,10 @@ public static class ServiceCollectionExtensions
             .NewConfig()
             .Map(dest => dest.FullName, src => $"{src.Title} {src.FirstName} {src.LastName}");*/
         
+        TypeAdapterConfig<TransactionEntity, TransactionResponseModel>
+            .NewConfig()
+            .Map(dest => dest.Timestamp, src => src.DateTime);
+        
         return services;
     }
     
@@ -149,9 +156,11 @@ public static class ServiceCollectionExtensions
 
         var pack = new ConventionPack
         {
-            new CamelCaseElementNameConvention()
+            new CamelCaseElementNameConvention(),
+            new EnumRepresentationConvention(BsonType.String),
+            new IgnoreIfNullConvention(true)
         };
-        ConventionRegistry.Register("CamelCaseElementNameConvention", pack, _ => true);
+        ConventionRegistry.Register("CamelCase_StringEnum_IgnoreNull_Convention", pack, _ => true);
         
         BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
         BsonSerializer.RegisterSerializer(new DateTimeSerializer(DateTimeKind.Utc));
