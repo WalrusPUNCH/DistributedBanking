@@ -1,9 +1,12 @@
-﻿version: '3.8'
- 
-networks:
-  mongo.network:
+﻿networks:
+  mongonetwork:
     driver: bridge
-    
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.55.0/24
+          gateway: 192.168.55.1
+
 services: 
   mongodb-one:
     container_name: mongodb-one
@@ -11,32 +14,35 @@ services:
     volumes:
       - ./scripts/replica-set-init.js:/scripts/replica-set-init.js
     networks:
-      mongo.network:
+      mongonetwork:
+        ipv4_address: 192.168.55.10
     ports:
-      - "27027:27027"
+      - "27027:27017"
     restart: always
-    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "banking_set", "--port", "27027"]
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "banking_set" ]
   
   mongodb-two:
     container_name: mongodb-two
     image: mongo:latest
     networks:
-      mongo.network:
+      mongonetwork:
+        ipv4_address: 192.168.55.11
     ports:
-      - "27028:27028"
+      - "27028:27017"
     depends_on:
       - mongodb-one
     restart: always
-    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "banking_set", "--port", "27028" ]
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "banking_set" ]
   
   mongodb-three:
     container_name: mongodb-three
     image: mongo:latest
     networks:
-      mongo.network:
+      mongonetwork:
+        ipv4_address: 192.168.55.12
     ports:
-      - "27029:27029"
+      - "27029:27017"
     depends_on:
       - mongodb-one      
     restart: always
-    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "banking_set", "--port", "27029" ]
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "banking_set" ]

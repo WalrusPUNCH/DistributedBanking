@@ -5,17 +5,17 @@
     "members": [
         {
             "_id": 0,
-            "host": "mongodb-one:27027",
+            "host": "mongodb-one",
             "priority": 1
         },
         {
             "_id": 1,
-            "host": "mongodb-two:27028",
+            "host": "mongodb-two",
             "priority": 0.5
         },
         {
             "_id": 2,
-            "host": "mongodb-three:27029",
+            "host": "mongodb-three",
             "priority": 0.5
         }
     ]
