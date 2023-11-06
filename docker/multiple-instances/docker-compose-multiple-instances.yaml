@@ -7,7 +7,7 @@ services:
     ports:
       - "27027:27027"
     restart: always
-    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "banking_set", "--port", "27027"]
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--port", "27027"]
   
   mongodb-two:
     container_name: mongodb-two
@@ -17,7 +17,7 @@ services:
     depends_on:
       - mongodb-one
     restart: always
-    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "banking_set", "--port", "27028" ]
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--port", "27028" ]
   
   mongodb-three:
     container_name: mongodb-three
@@ -27,4 +27,4 @@ services:
     depends_on:
       - mongodb-one
     restart: always
-    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "banking_set", "--port", "27029" ]
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--port", "27029" ]
