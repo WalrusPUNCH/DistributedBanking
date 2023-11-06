@@ -1,0 +1,32 @@
+﻿version: '3.8'
+ 
+services: 
+  mongodb-one:
+    container_name: mongodb-one
+    image: mongo:latest
+    volumes:
+      - ./scripts/replica-set-init.js:/scripts/replica-set-init.js
+    ports:
+      - "27027:27027"
+    restart: always
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "banking_set", "--port", "27027"]
+  
+  mongodb-two:
+    container_name: mongodb-two
+    image: mongo:latest
+    ports:
+      - "27028:27028"
+    depends_on:
+      - mongodb-one
+    restart: always
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "banking_set", "--port", "27028" ]
+  
+  mongodb-three:
+    container_name: mongodb-three
+    image: mongo:latest
+    ports:
+      - "27029:27029"
+    depends_on:
+      - mongodb-one      
+    restart: always
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "banking_set", "--port", "27029" ]
