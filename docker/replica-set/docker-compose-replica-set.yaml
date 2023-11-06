@@ -1,17 +1,11 @@
 ﻿version: '3.8'
  
-networks:
-  mongo.network:
-    driver: bridge
-    
 services: 
   mongodb-one:
     container_name: mongodb-one
     image: mongo:latest
     volumes:
       - ./scripts/replica-set-init.js:/scripts/replica-set-init.js
-    networks:
-      mongo.network:
     ports:
       - "27027:27027"
     restart: always
@@ -20,8 +14,6 @@ services:
   mongodb-two:
     container_name: mongodb-two
     image: mongo:latest
-    networks:
-      mongo.network:
     ports:
       - "27028:27028"
     depends_on:
@@ -32,8 +24,6 @@ services:
   mongodb-three:
     container_name: mongodb-three
     image: mongo:latest
-    networks:
-      mongo.network:
     ports:
       - "27029:27029"
     depends_on:
