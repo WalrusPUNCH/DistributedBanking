@@ -15,5 +15,4 @@
 <br/>
 
 
-
 `mongodb://mongodb-one:27027,mongodb-two:27028,mongodb-three:27029/?replicaSet=banking_set`
