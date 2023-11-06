@@ -27,7 +27,3 @@ console.log('Waiting for replica set initiation...')
 sleep(15000);
 
 printjson(rs.status());
-
-//"settings": {
-//    "chainingAllowed": false
-//}
