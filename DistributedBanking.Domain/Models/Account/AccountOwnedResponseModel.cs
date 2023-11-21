@@ -2,5 +2,5 @@
 
 public class AccountOwnedResponseModel : AccountResponseModel
 {
-    public Guid Owner { get; set; }
+    public required string Owner { get; set; }
 }

@@ -16,6 +16,7 @@
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.11" />
     <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="7.0.11" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.4" />
+    <PackageReference Include="Refit.HttpClientFactory" Version="7.0.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="7.0.0" />
     <PackageReference Include="Serilog.Enrichers.Environment" Version="2.2.0" />
     <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
@@ -27,6 +28,7 @@
   <ItemGroup>
     <ProjectReference Include="..\DistributedBanking.Data\DistributedBanking.Data.csproj" />
     <ProjectReference Include="..\DistributedBanking.Domain\DistributedBanking.Domain.csproj" />
+    <ProjectReference Include="..\TransactionalClock.Integration\TransactionalClock.Integration.csproj" />
   </ItemGroup>
 
 </Project>

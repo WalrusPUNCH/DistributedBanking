@@ -2,7 +2,7 @@
 using AutoWrapper.Wrappers;
 using DistributedBanking.Data.Models.Constants;
 using DistributedBanking.Domain.Models.Identity;
-using DistributedBanking.Domain.Services;
+using DistributedBanking.Domain.Services.Base;
 using DistributedBanking.Extensions;
 using DistributedBanking.Models.Identity;
 using Mapster;
@@ -27,18 +27,26 @@ public class IdentityController : IdentityControllerBase
     }
     
     [HttpPost("register/customer")]
-    [ProducesResponseType(typeof(ApplicationUserDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> RegisterCustomer(EndUserRegistrationDto registrationDto)
     { 
         return await RegisterUser(registrationDto.Adapt<EndUserRegistrationModel>(), RoleNames.Customer);
     }
     
     [HttpPost("register/worker")]
-    [ProducesResponseType(typeof(ApplicationUserDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = RoleNames.Administrator)]
     public async Task<IActionResult> RegisterWorker(WorkerRegistrationDto registrationDto)
     {
         return await RegisterUser(registrationDto.Adapt<WorkerRegistrationModel>(), RoleNames.Worker);
+    }
+    
+    [HttpPost("register/admin")] //todo remove
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = RoleNames.Administrator)]
+    public async Task<IActionResult> RegisterAdmin(WorkerRegistrationDto registrationDto)
+    {
+        return await RegisterUser(registrationDto.Adapt<WorkerRegistrationModel>(), RoleNames.Administrator);
     }
     
     [HttpPost("login")]
@@ -90,12 +98,12 @@ public class IdentityController : IdentityControllerBase
     private async Task<IActionResult> RegisterUser(EndUserRegistrationModel registrationModel, string role)
     {
         var userCreationResult = await _identityService.RegisterUser(registrationModel, role);
-        if (userCreationResult.IdentityResult.Succeeded)
+        if (userCreationResult.Succeeded)
         {
-            return Created(userCreationResult.User!.Id.ToString(), userCreationResult.User.Adapt<ApplicationUserDto>());
+            return Ok();
         }
         
-        HandleUserManagerFailedResult(userCreationResult.IdentityResult);
+        HandleUserManagerFailedResult(userCreationResult);
         throw new ApiException(ModelState.AllErrors());
     }
 }

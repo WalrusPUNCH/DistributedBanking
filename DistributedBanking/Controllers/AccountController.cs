@@ -1,7 +1,8 @@
 ﻿using DistributedBanking.Data.Models.Constants;
 using DistributedBanking.Domain.Models.Account;
-using DistributedBanking.Domain.Services;
+using DistributedBanking.Domain.Services.Base;
 using DistributedBanking.Extensions;
+using DistributedBanking.Filters;
 using DistributedBanking.Models.Account;
 using Mapster;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -32,21 +33,21 @@ public class AccountController : ControllerBase
         var userId = User.Id();
         var createdAccount = await _accountService.CreateAsync(userId, accountDto.Adapt<AccountCreationModel>());
             
-        return Created(createdAccount.Id.ToString(), createdAccount);
+        return Created(createdAccount.Id, createdAccount);
     }
     
-    [HttpGet]
+    [HttpGet] //todo remove
     [ProducesResponseType(typeof(IEnumerable<AccountOwnedResponseModel>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAccounts()
+    public async Task<IActionResult> GetAllAccounts()
     {
         var items = await _accountService.GetAsync();
         
         return Ok(items);
     }
     
-    [HttpGet("owned/{ownerId:guid}")]
+    [HttpGet("owned/{ownerId}")] //todo remove
     [ProducesResponseType(typeof(IEnumerable<AccountResponseModel>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetCustomerAccounts(Guid ownerId)
+    public async Task<IActionResult> GetCustomerAccounts(string ownerId)
     {
         var items = await _accountService.GetCustomerAccountsAsync(ownerId);
         
@@ -63,20 +64,21 @@ public class AccountController : ControllerBase
         return Ok(items);
     }
    
-    [HttpGet("{id:guid}")]
+    [HttpGet("{id}")] //todo remove
     [ProducesResponseType(typeof(AccountOwnedResponseModel), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAccount(Guid id)
+    public async Task<IActionResult> GetAccount(string id)
     {
         var item = await _accountService.GetAsync(id);
         
         return Ok(item);
     }
     
-    [HttpDelete("{id:guid}")]
+    [HttpDelete("{accountId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> DeleteAccount(Guid id)
+    [TypeFilter(typeof(UserAccountCheckingActionFilterAttribute))]
+    public async Task<IActionResult> DeleteAccount(string accountId)
     {
-        await _accountService.DeleteAsync(id);
+        await _accountService.DeleteAsync(accountId);
         
         return Ok();
     }

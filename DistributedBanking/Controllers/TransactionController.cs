@@ -1,6 +1,6 @@
 ﻿using DistributedBanking.Data.Models.Constants;
 using DistributedBanking.Domain.Models.Transaction;
-using DistributedBanking.Domain.Services;
+using DistributedBanking.Domain.Services.Base;
 using DistributedBanking.Filters;
 using DistributedBanking.Models.Transaction;
 using Mapster;
@@ -66,10 +66,10 @@ public class TransactionController : ControllerBase
             : BadRequest(transferStatus.Message);
     }
     
-    [HttpPost("account_history/{accountId:guid}")]
+    [HttpPost("account_history/{accountId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> AccountHistory(Guid accountId)
+    public async Task<IActionResult> AccountHistory(string accountId)
     {
         var transferStatus = await _transactionService.GetAccountTransactionHistory(accountId);
         

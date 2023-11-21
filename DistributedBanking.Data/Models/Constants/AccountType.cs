@@ -2,7 +2,6 @@
 
 public enum AccountType
 {
-    Unknown = 0,
     Regular,
     Digital,
     GovernmentalSupport

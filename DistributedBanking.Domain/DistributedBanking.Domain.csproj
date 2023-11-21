@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\DistributedBanking.Data\DistributedBanking.Data.csproj" />
+      <ProjectReference Include="..\TransactionalClock.Integration\TransactionalClock.Integration.csproj" />
     </ItemGroup>
 
     <ItemGroup>

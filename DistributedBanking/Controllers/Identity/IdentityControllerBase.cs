@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using DistributedBanking.Domain.Models.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DistributedBanking.Controllers.Identity;
@@ -16,11 +16,11 @@ public class IdentityControllerBase  : ControllerBase
         _logger = logger;
     }
     
-    protected void HandleUserManagerFailedResult(IdentityResult unsuccessfulResult)
+    protected void HandleUserManagerFailedResult(IdentityOperationResult unsuccessfulResult)
     {
         foreach (var error in unsuccessfulResult.Errors)
         {
-            ModelState.AddModelError("", error.Description);
+            ModelState.AddModelError("", error);
         }
         
         _logger.LogInformation("Identity action has ended unsuccessfully. Details: {Result}", 
