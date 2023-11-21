@@ -45,23 +45,19 @@ public class RepositoryTcBase<T> :  RepositoryBase<T> where T : BaseEntity
             throw new ArgumentNullException(nameof(entity));
         }
         
-        var response = await _transactionalClockClient.Update(
+        await _transactionalClockClient.Update(
             id: entity.Id.ToString(),
             database: _databaseName,
             collection: _collectionName,
             createdAt: DateTime.UtcNow.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ssZ"),
             entity);
-
-        var x = 10;
     }
 
     public override async Task RemoveAsync(ObjectId id)
     {
-        var response = await _transactionalClockClient.Delete(
+        await _transactionalClockClient.Delete(
             id: id.ToString(),
             database: _databaseName,
             collection: _collectionName);
-
-        var x = 10;
     }
 }
