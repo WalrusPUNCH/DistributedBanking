@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DistributedBanking.Domain",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DistributedBanking.Data", "DistributedBanking.Data\DistributedBanking.Data.csproj", "{F24A2935-B186-449A-B9CC-1BFA07C6AA48}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransactionalClock.Integration", "TransactionalClock.Integration\TransactionalClock.Integration.csproj", "{27AF0E3C-CFEB-42B6-9747-5E8B918139FF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{F24A2935-B186-449A-B9CC-1BFA07C6AA48}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F24A2935-B186-449A-B9CC-1BFA07C6AA48}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F24A2935-B186-449A-B9CC-1BFA07C6AA48}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27AF0E3C-CFEB-42B6-9747-5E8B918139FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27AF0E3C-CFEB-42B6-9747-5E8B918139FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27AF0E3C-CFEB-42B6-9747-5E8B918139FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27AF0E3C-CFEB-42B6-9747-5E8B918139FF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

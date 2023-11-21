@@ -1,11 +1,11 @@
 ﻿using AutoWrapper.Extensions;
 using AutoWrapper.Wrappers;
 using DistributedBanking.Data.Models.Constants;
-using DistributedBanking.Domain.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using DistributedBanking.Domain.Services.Base;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DistributedBanking.Controllers.Identity;
 
@@ -36,5 +36,25 @@ public class RoleController : IdentityControllerBase
 
         HandleUserManagerFailedResult(result);
         throw new ApiException(ModelState.AllErrors());
+    }
+    
+    [HttpGet("initialize")]
+    public async Task<IActionResult> Initialize()
+    {
+        var roles = new List<string> { RoleNames.Administrator, RoleNames.Worker, RoleNames.Customer};
+
+        foreach (var roleName in roles)
+        {
+            var result = await _identityService.CreateRole(roleName);
+            if (result.Succeeded)
+            {
+                continue;
+            }
+
+            HandleUserManagerFailedResult(result);
+            throw new ApiException(ModelState.AllErrors());
+        }
+
+        return Ok();
     }
 }

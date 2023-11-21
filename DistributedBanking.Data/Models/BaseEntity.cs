@@ -1,9 +1,13 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
+﻿using System.Text.Json.Serialization;
+using DistributedBanking.Data.Services.Implementation;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace DistributedBanking.Data.Models;
 
 public abstract class BaseEntity
 {
     [BsonId]
-    public Guid Id { get; set; }
+    [JsonConverter(typeof(ObjectIdJsonConverter)), JsonPropertyName("_id"), BsonElement(nameof(Id))]
+    public ObjectId Id { get; set; }
 }

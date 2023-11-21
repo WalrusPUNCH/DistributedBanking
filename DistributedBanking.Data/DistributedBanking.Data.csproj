@@ -14,4 +14,8 @@
       <PackageReference Include="MongoDbGenericRepository" Version="1.4.8" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\TransactionalClock.Integration\TransactionalClock.Integration.csproj" />
+    </ItemGroup>
+
 </Project>

@@ -21,9 +21,29 @@
     ]
 };
 
-printjson(rs.initiate(config, { force: true }));
+var code;
+try 
+{
+    var status = rs.status();
+    code = status.ok ? 0 : status.code
+} 
+catch (e) 
+{
+    code = e.code
+}
 
-console.log('Waiting for replica set initiation...')
-sleep(15000);
+console.log(`> rs status code: ${code}`)
+
+if (code != 0)
+{
+    console.log('> Replica set initialization has been called');
+    printjson(rs.initiate(config, { force: true }));
+    console.log('> Waiting for replica set initiation...');
+    sleep(15000);
+}
+else
+{
+    console.log('> OK! Replica set is already initialized');
+}
 
 printjson(rs.status());

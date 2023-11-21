@@ -6,6 +6,7 @@ services:
     image: mongo:latest
     volumes:
       - ./scripts/replica-set-init.js:/scripts/replica-set-init.js
+      - ./volumes/mongodb-one:/data/db
     ports:
       - "27027:27027"
     restart: always
@@ -14,6 +15,8 @@ services:
   mongodb-two:
     container_name: mongodb-two
     image: mongo:latest
+    volumes:
+      - ./volumes/mongodb-two:/data/db
     ports:
       - "27028:27028"
     depends_on:
@@ -24,6 +27,8 @@ services:
   mongodb-three:
     container_name: mongodb-three
     image: mongo:latest
+    volumes:
+      - ./volumes/mongodb-three:/data/db
     ports:
       - "27029:27029"
     depends_on:

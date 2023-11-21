@@ -1,4 +1,4 @@
-﻿using DistributedBanking.Domain.Services;
+﻿using DistributedBanking.Domain.Services.Base;
 using DistributedBanking.Extensions;
 using DistributedBanking.Models.Transaction;
 using Microsoft.AspNetCore.Mvc;
@@ -21,24 +21,24 @@ public class UserAccountCheckingActionFilterAttribute : Attribute, IAsyncActionF
         var transactionObject = context.ActionArguments
             .FirstOrDefault(p => p.Value is OneWayTransactionDto or TwoWayTransactionDto);
 
-        Guid? sourceAccountId = transactionObject.Value switch
+        string? sourceAccountId = transactionObject.Value switch
         {
             OneWayTransactionDto oneWayTransaction => oneWayTransaction.SourceAccountId,
             TwoWayTransactionDto twoWayTransaction => twoWayTransaction.SourceAccountId,
             _ => null
         };
 
-        if (!sourceAccountId.HasValue)
+        if (string.IsNullOrWhiteSpace(sourceAccountId))
         {
             sourceAccountId = context.HttpContext.Request.RouteValues.TryGetValue("accountId", out var value) 
                               && value is string stringValue && !string.IsNullOrWhiteSpace(stringValue) 
-                ? new Guid(stringValue)
+                ? stringValue
                 : null;
         }
 
-        if (sourceAccountId.HasValue)
+        if (!string.IsNullOrWhiteSpace(sourceAccountId))
         {
-            var isAccountBelongsToUser = await _accountService.BelongsTo(sourceAccountId.Value, context.HttpContext.User.Id());
+            var isAccountBelongsToUser = await _accountService.BelongsTo(sourceAccountId, context.HttpContext.User.Id());
             if (!isAccountBelongsToUser)
             {
                 context.Result = new  ObjectResult(context.ModelState)

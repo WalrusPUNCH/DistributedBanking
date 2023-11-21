@@ -57,7 +57,6 @@ public static class ApplicationBuilderExtensions
         applicationBuilder.UseApiResponseAndExceptionWrapper(
             new AutoWrapperOptions 
             { 
-                //IsApiOnly = false,
                 IgnoreWrapForOkRequests = true
             });
         
